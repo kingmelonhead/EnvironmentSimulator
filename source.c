@@ -1,4 +1,12 @@
-//main source file for assignment 1
+/*******************************************************************************************
+ *
+ * 	Name: John Hackstadt
+ *	Email: jhackstadt50@gmail.com - personal
+ *		jeh5h7@umsystem.edu - school
+ *	Title:	Assignment 1 (cs 4760)
+ *	Description: Environment Variable Tool
+ *
+ ******************************************************************************************/
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,17 +14,33 @@
 #include <string.h>
 extern char **environ;
 void print_vars(){
-	char **ptr;
-	char *key;
-	char tempStr[5000];
+	/*
+	 *	This function is used for the printing of the environment variables to stdout 
+	 */
+	char *key, *tempStr;
+	int count = 0;
+	int size;
+	int i = 0;
 	const char delim[2] = "=";
-	for (ptr = environ; *ptr != NULL; ptr++){
-		strcpy(tempStr, *ptr);
+	while (environ[count] != NULL){
+		count++; // gets the number of env vars
+	}
+	for (i=0; i<count; i++){
+		size = strlen(environ[i]);
+		tempStr = malloc(size * sizeof(char *));
+		strcpy(tempStr, environ[i]);
 		key = strtok(tempStr, delim);
 		printf("%s=%s\n", key, getenv(key));
+		free(tempStr);
 	}
 }
-void update_env(int argc, char **args, char **vars){
+void update_env(int argc, char **args){
+	/*
+	 *	This function is used when user would like to add to / update the 
+	 *	variables that already exist. In otherwords, if the variable is
+	 *	already defined in the environment, it is updated. If not, it is 
+	 *	added to the environment.
+	 */
 	int count = 0;
 	int util_start;
 	int oldenv = 0;
@@ -29,9 +53,8 @@ void update_env(int argc, char **args, char **vars){
 	int size;
 	char **arrcopy;
 	const char delim[2] = "=";
-	for (ptr = vars; *ptr != NULL; ptr++){
-		//gets number of original environment variables
-		oldenv++;
+	for (ptr = environ; *ptr != NULL; ptr++){
+		oldenv++; // gets number of original environment variables
 	}
 	for (i = 1; i < argc; i++){
 		if (strcmp(args[i], "utility") == 0){
@@ -68,16 +91,17 @@ void update_env(int argc, char **args, char **vars){
 }
 
 void replace_env(int argc, char **args){
+	/*	
+	 *	This function is called when the user wants to completely replace their whole environment
+	 *	In other words, the entire existing environment is ignored and I make a new one and point
+	 *	environ towards it
+	 */
 	char **newenv;
-	printf("passed malloc lol\n");
-	int util = 0; 
-	int util_start;
-	int util_count;
-	int i;
-	int count;
+	int util = 0;  // boolean
+	int count = 0;
+	int util_start, i;
 	for (i=2; i<argc; i++){
 		if (strcmp(args[i], "utility") == 0){
-			printf("found utility\n");
 			util = 1;
 			util_start = i+1;
 			break;
@@ -87,17 +111,17 @@ void replace_env(int argc, char **args){
 			count++;
 		}
 	}
-	newenv = malloc(sizeof(char *) * count);
+	newenv = malloc(sizeof(char *) * (count + 1));
 	for (i = 0; i< count; i++){
+		newenv[i] = malloc(sizeof(char *) * (strlen(args[i+2]) + 1));
 		newenv[i] = args[i+2];
 	}
+	newenv[count] = NULL;
 	environ = newenv;
-	printf("New environment:\n\n");
-	print_vars();
-	printf("\nUtility:\n");
 	if (util == 1){
+		printf("\nUtility:\n");
 		if (argc == util_start){
-			printf("No utility given\n");
+			printf("utility arg passed, but no utility given\n");
 		}
 		else {
 			for (i = util_start; i < argc; i++){
@@ -105,11 +129,13 @@ void replace_env(int argc, char **args){
 			}
 		}
 	}
+	else {
+		printf("New Environment:\n\n");
+		print_vars();
+	}
 
 }
-void run_utility(int argc, char **args){
 
-}
 void display_help(){
 	system("clear");
 	printf("HELP MENU:\n\n");
@@ -125,7 +151,7 @@ void display_help(){
 	printf("[utility]	if this argument is encountered, any argument provided after it will be ran under the modified/new environment.\n\n");
 	printf("	Call the program without this option and the environment will simply be printed to the console (stdout).\n\n");
 }
-int main(int argc, char *argv[], char *envp[]){
+int main(int argc, char *argv[]){
 	
 	system("clear"); // clear the console prior to running, maximizes screen real estate
 
@@ -159,7 +185,7 @@ int main(int argc, char *argv[], char *envp[]){
 		replace_env(argc, argv);
 	}
 	else {	
-		update_env(argc, argv, envp);
+		update_env(argc, argv);
 	}
 
 
