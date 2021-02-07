@@ -1,0 +1,68 @@
+Name: John Hackstadt
+
+README for assignment 1
+
+---------------Basic operations of functions-----------------------
+
+print_vars() : 
+	-iterates through the environment to get number of environment variables
+	-for loop using that # of variables goes through and copies each environment variable to a temp string
+	-cuts off everthing after the =, including the =. This extracts the name of the var only
+	-calls getenv with the name from the previous step and prints to std out
+	-this all repeats for each element of the environ array
+
+run_utility() :
+	- takes an argument list, arg count, and a start index
+	- if the start index = the arg count then an error message will be displayed indicating that
+		the user said they wanted commands ran but didnt provide anything to run
+	- otherwise a loop starts at the start index and iterates through the rest of the argument list
+		performing system() on each of the remaining arguments
+
+update_env() :
+	- this function takes in arguments to either append to the environment list, or update, depending on
+		whether or not the variable already exists in the environment
+	- This will be done by making an new pointer and redirecting the environment to the new one 
+		since we cant resize the default environment
+	- If user passes 'utility' argument the function redirects to run_utility() where any argument 
+		after utility is ran as a command
+
+replace_env() :
+	- This function takes in arguments to add to a new environment
+	- The existing environment pointer gets redirected to the new one made here to overwrite it
+	- If the user passes 'utility' argument the function redirects to run_utility()
+
+display_help() :
+	-This function just outputs help information to the screen
+
+main() :
+	- This function is used to put all the other functions to use
+	- Utilizes getopt() in order to determine if the user wants simply the help menu printed (-h option)
+		as well as gives them the option to overwrite the environment with their arguments (-i option)
+	- not using the -i or -h options will result in the current environment being updated as oppsed to 
+		being overwritten like it is with the -i option
+
+---------------- Options ------------------------------------------------------------
+
+[-i] - Overwrite the environment with name=value pairs given in arguments
+	
+
+[-h] - Display help menu and end program
+
+
+[utility] - pass as an argument with arguments after it. Any argument after it will be ran using
+		system() under the updated environment
+
+[no options] - run ./doenv with nothing else and it will print the current environment
+
+
+------------- Usage examples  -------------------------------------------------------------------
+
+./doenv -h
+
+./doenv 
+
+./doenv name=value ...
+
+./doenv -i name=value ... name=value
+
+./doenv name=value .... name=value utility pwd 'echo hello' 

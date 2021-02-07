@@ -13,6 +13,7 @@
 #include <getopt.h>
 #include <string.h>
 extern char **environ;
+
 void print_vars(){
 	/*
 	 *	This function is used for the printing of the environment variables to stdout 
@@ -34,6 +35,26 @@ void print_vars(){
 		free(tempStr);
 	}
 }
+
+void run_utility(int argc, char **args, int start){
+	/*
+	 *	externam function used to run utility passed to doenv provided the utility arg is provided
+	 *	using a separate function as to not have duplicate code in my project as this functionality
+	 *	will be needed for both update_env() and replace_env()
+	 */
+	int i;
+	if (argc == start){
+		printf("Utility was passed as an argument but no commands were provided after it\n");
+		printf("Printing current environment instead:\n");
+		print_vars();
+	}
+	else {
+		for (i=start; i<argc; i++){
+			system(args[i]);
+		}
+	}
+}
+
 void update_env(int argc, char **args){
 	/*
 	 *	This function is used when user would like to add to / update the 
@@ -119,15 +140,7 @@ void replace_env(int argc, char **args){
 	newenv[count] = NULL;
 	environ = newenv;
 	if (util == 1){
-		printf("\nUtility:\n");
-		if (argc == util_start){
-			printf("utility arg passed, but no utility given\n");
-		}
-		else {
-			for (i = util_start; i < argc; i++){
-				system(args[i]);
-			}
-		}
+		run_utility(argc, args, util_start);
 	}
 	else {
 		printf("New Environment:\n\n");
@@ -137,6 +150,10 @@ void replace_env(int argc, char **args){
 }
 
 void display_help(){
+	/*
+	 *	function that gets called when ./doenv -h ... is called 
+	 *	just displays a screen that resembles a man page for easier use of my program
+	 */
 	system("clear");
 	printf("HELP MENU:\n\n");
 	printf("Note: Call the program with no arguments to print out the current environment variables to the console.\n\n");
@@ -152,7 +169,11 @@ void display_help(){
 	printf("	Call the program without this option and the environment will simply be printed to the console (stdout).\n\n");
 }
 int main(int argc, char *argv[]){
-	
+
+	/*
+	 *	Main Function
+	 */
+
 	system("clear"); // clear the console prior to running, maximizes screen real estate
 
 	int opt;
@@ -175,7 +196,7 @@ int main(int argc, char *argv[]){
 				replace = 1;
 				break;
 			default:
-				printf("Invalid option given. Program will print current environment and end.\n");
+				printf("Program will now print current environment and end.\n");
 				print_vars();
 				return 0;
 		}
@@ -187,7 +208,6 @@ int main(int argc, char *argv[]){
 	else {	
 		update_env(argc, argv);
 	}
-
 
 	return 0;
 }	
