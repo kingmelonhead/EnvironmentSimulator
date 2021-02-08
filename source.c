@@ -66,9 +66,9 @@ void update_env(int argc, char **args){
 	char **newenv, **ptr;
 	char *key, *tempStr;
 	const char delim[2] = "=";
-	int new_index = 0;
-	int oldenv = 0;
-	int newvars[argc];
+	int new_index = 0;	// used as an index counter for iterating through the newvars array
+	int oldenv = 0;		// counts the # of vars in origonal environment
+	int newvars[argc];	// array used to hold the indexes of new variables that need to be appended to the environment
 	int count = 0; //used to count the number of arguments that represent name=value pairs
 	for (ptr=environ; *ptr != NULL; ptr++){
 		oldenv++;
@@ -97,20 +97,20 @@ void update_env(int argc, char **args){
 	}
 	total = count + oldenv;
 	newenv = malloc(sizeof(char *) * (total + 1));
-	for (i = 0; i<oldenv; i++){
+	for (i = 0; i<oldenv; i++){			//coppies existing environment into our new environment
 		size = strlen(environ[i]);
 		newenv[i] = (char *)malloc(sizeof(char) * (size+1));
 		newenv[i] = environ[i];
 	}
 	count = 0;
-	for (i = oldenv; i< total; i++){
+	for (i = oldenv; i< total; i++){		//adds new variables to end of the environment
 		size = strlen(args[newvars[count]]);
 		newenv[i] = (char *)malloc(sizeof(char) * (size + 1));
 		newenv[i] = args[newvars[count]];
 		count++;
 	}
-	newenv[total] = NULL;
-	environ = newenv;
+	newenv[total] = NULL;			//makes final element in the pointer null so that print function works
+	environ = newenv;			//sets environment to the new pointer
 	if (util == 1){
 		run_utility(argc, args, util_start);
 	}
@@ -218,7 +218,5 @@ int main(int argc, char *argv[]){
 	else {	
 		update_env(argc, argv);
 	}
-
-
 	return 0;
 }	
