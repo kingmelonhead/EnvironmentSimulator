@@ -62,53 +62,62 @@ void update_env(int argc, char **args){
 	 *	already defined in the environment, it is updated. If not, it is 
 	 *	added to the environment.
 	 */
-	int count = 0;
-	int util_start;
-	int oldenv = 0;
-	int util = 0;
-	int i;
-	int c;
-	char *key;
-	char **ptr;
-	char tempStr[5000];
-	int size;
-	char **arrcopy;
+	int i, util, util_start, size, total;
+	char **newenv, **ptr;
+	char *key, *tempStr;
 	const char delim[2] = "=";
-	for (ptr = environ; *ptr != NULL; ptr++){
-		oldenv++; // gets number of original environment variables
+	int new_index = 0;
+	int oldenv = 0;
+	int newvars[argc];
+	int count = 0; //used to count the number of arguments that represent name=value pairs
+	for (ptr=environ; *ptr != NULL; ptr++){
+		oldenv++;
 	}
-	for (i = 1; i < argc; i++){
+	for (i=1; i<argc; i++){
 		if (strcmp(args[i], "utility") == 0){
-			//loop ends if utility keyword is hit
+			util_start = i + 1;
 			util = 1;
-			util_start = i+1;
 			break;
 		}
 		else {
+			size = strlen(args[i]);
+			tempStr = (char *)malloc(sizeof(char) * (size + 1));
 			strcpy(tempStr, args[i]);
 			key = strtok(tempStr, delim);
 			if (getenv(key) == NULL){
-				size = strlen(args[i]);
-				printf("Passed strlen\n");
-				arrcopy[count] = malloc(sizeof(char *)*size);
-				printf("passed malloc\n");
-				strcpy(arrcopy[count], args[i]);
-				printf("passed copy\n");
-				//gets number of new variables
-				count++;
-
+				count++; // count increases becasue its a new variable
+				newvars[new_index] = i;
+				new_index++;
 			}
 			else {
-				putenv(args[i]); // updates vars that do already exist
+				putenv(args[i]); //anything not new gets updated
 			}
+			free(tempStr);
 		}
 	}
-	count = oldenv + count;
-	for (i = 0; i < count; i++){
-
+	total = count + oldenv;
+	newenv = malloc(sizeof(char *) * (total + 1));
+	for (i = 0; i<oldenv; i++){
+		size = strlen(environ[i]);
+		newenv[i] = (char *)malloc(sizeof(char) * (size+1));
+		newenv[i] = environ[i];
 	}
-	print_vars();
-
+	count = 0;
+	for (i = oldenv; i< total; i++){
+		size = strlen(args[newvars[count]]);
+		newenv[i] = (char *)malloc(sizeof(char) * (size + 1));
+		newenv[i] = args[newvars[count]];
+		count++;
+	}
+	newenv[total] = NULL;
+	environ = newenv;
+	if (util == 1){
+		run_utility(argc, args, util_start);
+	}
+	else {
+		printf("New environment:\n");
+		print_vars();
+	}
 }
 
 void replace_env(int argc, char **args){
@@ -167,6 +176,7 @@ void display_help(){
 	printf(" 	[NAME=VALUE] pair will be updated. If the NAME doesn't exist, then the variable will be added to the environ.\n\n");
 	printf("[utility]	if this argument is encountered, any argument provided after it will be ran under the modified/new environment.\n\n");
 	printf("	Call the program without this option and the environment will simply be printed to the console (stdout).\n\n");
+	printf("More info is also in the README. Info surrounding how various components of the program function.\n\n");
 }
 int main(int argc, char *argv[]){
 
@@ -208,6 +218,7 @@ int main(int argc, char *argv[]){
 	else {	
 		update_env(argc, argv);
 	}
+
 
 	return 0;
 }	
