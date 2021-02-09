@@ -12,27 +12,33 @@ print_vars() :
 	-this all repeats for each element of the environ array
 
 run_utility() :
-	- takes an argument list, arg count, and a start index
-	- if the start index = the arg count then an error message will be displayed indicating that
-		the user said they wanted commands ran but didnt provide anything to run
-	- otherwise a loop starts at the start index and iterates through the rest of the argument list
-		performing system() on each of the remaining arguments
+	- Attemts to run passed arg as a system call
+	- Displays appropriate message if it is determined not a valid command
 
 update_env() :
 	- this function takes in arguments to either append to the environment list, or update, depending on
 		whether or not the variable already exists in the environment
 	- This will be done by making an new pointer and redirecting the environment to the new one 
 		since we cant resize the default environment
-	- If user passes 'utility' argument the function redirects to run_utility() where any argument 
-		after utility is ran as a command
+	- A user can enter an argument other than a name=value pair and it will be ran as a command in the shell
 
 replace_env() :
 	- This function takes in arguments to add to a new environment
 	- The existing environment pointer gets redirected to the new one made here to overwrite it
-	- If the user passes 'utility' argument the function redirects to run_utility()
+	- If the user passes command to the function redirects to run_utility()
 
 display_help() :
 	-This function just outputs help information to the screen
+
+check_inenv() :
+	- Determines if a var already exists in the environment
+
+check_var() :
+	- Determines if passed argument can be an environment variable
+	- Does this by seeing if it is in the form [something]=[something]
+
+get_loc() :
+	-Gets the location of an already existing var from the environment and returns it
 
 main() :
 	- This function is used to put all the other functions to use
@@ -40,6 +46,7 @@ main() :
 		as well as gives them the option to overwrite the environment with their arguments (-i option)
 	- not using the -i or -h options will result in the current environment being updated as oppsed to 
 		being overwritten like it is with the -i option
+	- prints final state of the environment
 
 ---------------- Options ------------------------------------------------------------
 
@@ -65,4 +72,4 @@ main() :
 
 ./doenv -i name=value ... name=value
 
-./doenv name=value .... name=value utility pwd 'echo hello' 
+./doenv name=value .... name=value [utility] ... (examples of utility include: pwd, 'echo hello' )
