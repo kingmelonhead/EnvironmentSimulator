@@ -244,7 +244,6 @@ int main(int argc, char *argv[]){
 				break;
 			case 'i':
 				printf("-i option recieved. Entire environment will be replaced\n");
-				printf("Note: if you intend to pass ./doenv as a utility argument, you must first set the variable TERM\n\n");
 				replace = 1;
 				break;
 			default:

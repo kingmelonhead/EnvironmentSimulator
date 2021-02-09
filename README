@@ -82,8 +82,5 @@ main() :
 
 ------------ issues -----------------------------------------------------------------------
 
-When working on this project, the only issue that I can't resolve is if the user tries to replace the environment
-but they dont re set the variable 'TERM' and it results in an issue if the user attempts to recursively call ./doenv
-
-I will put a note to the user that if their intent is to pass ./doenv as a utility argument when replacing the whole environment
-they must manually set the TERM variable first
+I notice that calling ./doenv or env recursively prints certain vars like PWD to stdout even when I dont put them in there
+(in -i mode)
