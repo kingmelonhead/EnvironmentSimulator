@@ -217,7 +217,6 @@ int main(int argc, char *argv[]){
 	/*
 	 *	Main Function
 	 */
-	system("clear"); // clear the console prior to running, maximizes screen real estate
 	int opt;
 	int replace = 0;
 	printf("**************  	 environment tool 	 ********************************\n\n");
