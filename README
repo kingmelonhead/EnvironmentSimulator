@@ -2,6 +2,12 @@ Name: John Hackstadt
 
 README for assignment 1
 
+calling 'git log' will allow you to see progression of project
+
+for specific changes, the commits can be viewed from the git hub page
+
+url: https://github.com/kingmelonhead/hackstad.1/blob/main/source.c
+
 ---------------Basic operations of functions-----------------------
 
 print_vars() : 
