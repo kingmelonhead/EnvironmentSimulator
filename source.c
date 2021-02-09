@@ -66,8 +66,10 @@ void run_utility(char *arg){
 	 *	using a separate function as to not have duplicate code in my project as this functionality
 	 *	will be needed for both update_env() and replace_env()
 	 */
-	if (system(arg) < 0){
-		perror("error");
+	printf("System Call:\n\n");
+	if (system(arg) != 0){
+		errno = 22;
+		perror("Error");
 	}
 	else {
 		printf("\n");
@@ -104,7 +106,6 @@ int get_loc(char *var){
 		tempStr2 = malloc(sizeof(char) * envLen);
 		strcpy(tempStr2, *ptr);
 		key2 = strtok(tempStr2, "=");
-		printf("Debug: key1 : %s key2: %s \n\n", key1, key2);
 		if (strcmp(key1, key2) == 0){
 			free(tempStr1);
 			free(tempStr2);
@@ -158,8 +159,8 @@ void update_env(int argc, char **args){
 			}
 		}
 		else {
-			printf("Environment before running command: \n\n");
-			print_vars();
+			//printf("Environment before running command: \n\n");
+			//print_vars();
 			run_utility(args[i]);
 		}
 	}
@@ -176,6 +177,7 @@ void replace_env(int argc, char **args){
 	int index = 0;
 	newenv = malloc(sizeof(char *) * (argc + 1));
 	environ = newenv;
+	newenv[index] = NULL;
 	for (i=2; i<argc; i++){
 		if (check_var(args[i]) == 1){
 			newenv[index] = malloc(sizeof(char) * strlen(args[i]));
@@ -184,8 +186,8 @@ void replace_env(int argc, char **args){
 			newenv[index] = NULL;
 		}
 		else {	
-			printf("Environment before running command:\n\n");
-			print_vars();
+			//printf("Environment before running command:\n\n");
+			//print_vars();
 			run_utility(args[i]);
 		}
 	}
@@ -197,7 +199,6 @@ void display_help(){
 	 *	just displays a screen that resembles a man page for easier use of my program
 	 */
 	system("clear");
-	// */
 	printf("HELP MENU:\n\n");
 	printf("Note: Call the program with no arguments to print out the current environment variables to the console.\n\n");
 	printf("Usage:	./doenv [-i (optional)] [NAME=VALUE] ... [NAME=VALUE] .... [COMMAND] ... [COMMAND]\n\n");
@@ -213,11 +214,9 @@ void display_help(){
 	printf("More info is also in the README. Info surrounding how various components of the program function.\n\n");
 }
 int main(int argc, char *argv[]){
-
 	/*
 	 *	Main Function
 	 */
-
 	system("clear"); // clear the console prior to running, maximizes screen real estate
 	int opt;
 	int replace = 0;
@@ -237,6 +236,7 @@ int main(int argc, char *argv[]){
 				break;
 			case 'i':
 				printf("-i option recieved. Entire environment will be replaced\n");
+				printf("Note: if you intend to pass ./doenv as a utility argument, you must first set the variable TERM\n\n");
 				replace = 1;
 				break;
 			default:
