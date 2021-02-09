@@ -173,17 +173,26 @@ void replace_env(int argc, char **args){
 	 *	environ towards it
 	 */
 	char **newenv;
-	int i;
+	int i, loc, len;
 	int index = 0;
 	newenv = malloc(sizeof(char *) * (argc + 1));
 	environ = newenv;
 	newenv[index] = NULL;
 	for (i=2; i<argc; i++){
 		if (check_var(args[i]) == 1){
-			newenv[index] = malloc(sizeof(char) * strlen(args[i]));
-			strcpy(newenv[index], args[i]);
-			index++;
-			newenv[index] = NULL;
+			if (check_inenv(args[i]) == 0){
+				newenv[index] = malloc(sizeof(char) * strlen(args[i])); // if not already in env then add it
+				strcpy(newenv[index], args[i]);
+				index++;
+				newenv[index] = NULL;
+			}
+			else {
+				loc = get_loc(args[i]);
+				free(newenv[loc]);
+				len = strlen(args[i]);
+				newenv[loc] = malloc(sizeof(char) * len);
+				strcpy(newenv[loc], args[i]);
+			}
 		}
 		else {	
 			//printf("Environment before running command:\n\n");
